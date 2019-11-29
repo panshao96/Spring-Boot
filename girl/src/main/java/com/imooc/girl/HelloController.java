@@ -12,7 +12,7 @@ public class HelloController {
    private  GirlProperties girlProperties;
 
     @GetMapping(value = {"/say", "/hi"})
-    public String say(@RequestParam(value = "id", required = false, defaultValue = "") Integer id) {
+    public String say(@RequestParam(value = "id", required = false, defaultValue = "0") Integer id) {
 //        return "Hello Spring Boot!";
         return "id: " + id;
     }
