@@ -1,17 +1,16 @@
 package com.imooc.girl.controller;
 
 import com.imooc.girl.domain.Girl;
+import com.imooc.girl.domain.Result;
 import com.imooc.girl.respository.GirlRepository;
 import com.imooc.girl.service.GirlService;
+import com.imooc.girl.utils.ResultUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
-
 
 /**
  * @author panshao
@@ -21,17 +20,18 @@ public class GirlController {
 
     @Autowired
     private GirlRepository girlRepository;
+
     @Autowired
     private GirlService girlService;
 
+    private final static Logger logger = LoggerFactory.getLogger(GirlController.class);
     /**
      * 获取Girl表中所有数据
      * @return
      */
     @GetMapping(value = "/girl")
-    public List<Girl> girlList() {
-        System.out.println("girlList");
-        return girlRepository.findAll();
+    public Result girlList() {
+        return ResultUtil.success(girlRepository.findAll());
     }
 
     /**
@@ -39,18 +39,13 @@ public class GirlController {
      * @return
      */
     @PostMapping(value = "/girl")
-    public Girl girlAdd(@Valid Girl girl, BindingResult bindingResult) {
+    public Result girlAdd(@Valid Girl girl, BindingResult bindingResult) {
 
         if(bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getFieldError().getDefaultMessage());
-            return null;
+            logger.info(bindingResult.getFieldError().getDefaultMessage());
+            return ResultUtil.fail(bindingResult.getFieldError().getDefaultMessage());
         }
-
-        girl.setAge(girl.getAge());
-        girl.setCupSize(girl.getCupSize());
-        girl.setMoney(girl.getMoney());
-
-        return girlRepository.save(girl);
+        return ResultUtil.success(girlRepository.save(girl));
     }
 
     /**
@@ -59,8 +54,8 @@ public class GirlController {
      * @return
      */
     @GetMapping(value = "/girl/{id}")
-    public Optional<Girl> girlFindOne(@PathVariable("id") Integer id) {
-        return girlRepository.findById(id);
+    public Result girlFindById(@PathVariable("id") Integer id) {
+        return ResultUtil.success(girlRepository.findById(id));
     }
 
     /**
@@ -69,8 +64,11 @@ public class GirlController {
      * @return
      */
     @GetMapping(value = "/girl/age/{age}")
-    public List<Girl> girlListByAge(@PathVariable("age") Integer age) {
-        return girlRepository.findByAge(age);
+    public Result girlListByAge(@PathVariable("age") Integer age) {
+        if(girlRepository.findByAge(age).isEmpty()) {
+            return ResultUtil.fail("数据为空");
+        }
+        return ResultUtil.success(girlRepository.findByAge(age));
     }
 
     /**
@@ -80,13 +78,13 @@ public class GirlController {
      * @return
      */
     @PutMapping(value = "/girl/{id}")
-    public Girl girlUpdate(@PathVariable("id") Integer id, Girl girl) {
-
+    public Result girlUpdate(@PathVariable("id") Integer id, @Valid Girl girl, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            logger.info(bindingResult.getFieldError().getDefaultMessage());
+            return ResultUtil.fail(bindingResult.getFieldError().getDefaultMessage());
+        }
         girl.setId(id);
-        girl.setCupSize(girl.getCupSize());
-        girl.setAge(girl.getAge());
-        girl.setMoney(girl.getMoney());
-        return girlRepository.save(girl);
+        return ResultUtil.success(girlRepository.save(girl));
     }
 
     /**

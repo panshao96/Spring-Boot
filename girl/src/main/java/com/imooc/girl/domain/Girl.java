@@ -12,6 +12,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,9 +22,16 @@ import javax.validation.constraints.Min;
 public class Girl {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
+
+    @NotEmpty(message = "请输入cupSize")
     private String cupSize;
+
+    @NotNull(message = "请输入年龄")
     @Min(value = 18, message = "未成年人禁止入内")
     private Integer age;
-    private Double money;
+
+    @NotNull(message = "请输入收入")
+    private Double incomes;
 }
