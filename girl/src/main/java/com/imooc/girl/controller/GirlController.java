@@ -2,15 +2,19 @@ package com.imooc.girl.controller;
 
 import com.imooc.girl.domain.Girl;
 import com.imooc.girl.domain.Result;
+import com.imooc.girl.enums.ResultEnum;
+import com.imooc.girl.exception.GirlException;
 import com.imooc.girl.respository.GirlRepository;
 import com.imooc.girl.service.GirlService;
 import com.imooc.girl.utils.ResultUtil;
+import org.omg.CORBA.UNKNOWN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.util.Optional;
 
 /**
  * @author panshao
@@ -35,7 +39,7 @@ public class GirlController {
     }
 
     /**
-     * 为添加Girl表添加一条数据
+     * 为Girl表添加一条数据
      * @return
      */
     @PostMapping(value = "/girl")
@@ -43,7 +47,7 @@ public class GirlController {
 
         if(bindingResult.hasErrors()) {
             logger.info(bindingResult.getFieldError().getDefaultMessage());
-            return ResultUtil.fail(bindingResult.getFieldError().getDefaultMessage());
+            return ResultUtil.fail(-1, bindingResult.getFieldError().getDefaultMessage());
         }
         return ResultUtil.success(girlRepository.save(girl));
     }
@@ -66,7 +70,7 @@ public class GirlController {
     @GetMapping(value = "/girl/age/{age}")
     public Result girlListByAge(@PathVariable("age") Integer age) {
         if(girlRepository.findByAge(age).isEmpty()) {
-            return ResultUtil.fail("数据为空");
+            return ResultUtil.fail(-1,"数据为空");
         }
         return ResultUtil.success(girlRepository.findByAge(age));
     }
@@ -81,7 +85,7 @@ public class GirlController {
     public Result girlUpdate(@PathVariable("id") Integer id, @Valid Girl girl, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             logger.info(bindingResult.getFieldError().getDefaultMessage());
-            return ResultUtil.fail(bindingResult.getFieldError().getDefaultMessage());
+            return ResultUtil.fail(ResultEnum.UNKNOWN_ERROR.getCode(), ResultEnum.UNKNOWN_ERROR.getMsg());
         }
         girl.setId(id);
         return ResultUtil.success(girlRepository.save(girl));
@@ -104,4 +108,12 @@ public class GirlController {
         girlService.insertTwo();
     }
 
+    /**
+     * 通过id查询到年龄信息
+     * @param id
+     */
+    @GetMapping(value = "/girl/getAge/{id}")
+    public void girlGetAge(@PathVariable("id") Integer id) throws Exception {
+        girlService.getAge(id);
+    }
 }

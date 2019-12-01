@@ -12,14 +12,12 @@ import java.util.List;
  * @author panshao
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Result<T> {
 
     /**
      * 错误码.
      */
-    private Boolean code;
+    private Integer code;
 
     /**
      * 提示信息.

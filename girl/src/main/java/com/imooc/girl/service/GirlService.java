@@ -1,7 +1,11 @@
 package com.imooc.girl.service;
 
 import com.imooc.girl.domain.Girl;
+import com.imooc.girl.domain.Result;
+import com.imooc.girl.enums.ResultEnum;
+import com.imooc.girl.exception.GirlException;
 import com.imooc.girl.respository.GirlRepository;
+import com.imooc.girl.utils.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 
+/**
+ * @author panshao
+ */
 @Service
 public class GirlService {
 
@@ -30,10 +37,26 @@ public class GirlService {
         girlRepository.save(girlB);
     }
 
-    @GetMapping("/girl/getAge/{id}")
-    public void getAge(@PathVariable("id") Integer id) {
-        Optional<Girl> girl = girlRepository.findById(id);
 
+    public void getAge(Integer id) {
+        Girl girl = girlRepository.getOne(id);
+        Integer age = girl.getAge();
+        if (age < 10) {
+            throw  new GirlException(ResultEnum.JUNIOR);
+        }else if (age > 10 && age < 18) {
+            throw new GirlException(ResultEnum.MIDDLE_STUDENT);
+        }else {
+            throw new GirlException(ResultEnum.ADULT);
+        }
+    }
+
+    /**
+     * 通过id查询信息
+     * @param id
+     * @return
+     */
+    public Girl findOne(Integer id) {
+        return girlRepository.getOne(id);
     }
 
 }
